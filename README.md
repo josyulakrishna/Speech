@@ -7,7 +7,6 @@ Each word has its own HMM with 3 states(which can be set inside the file constru
 Flow of the Program: 
 
 Preprocessing --> MFCC| --> GMM --> HMM --> Train.|
-|                     |                           |
-|-------melfcc.m------|--------HMM Toolbox--------|
+
 
 GMM is initalized with 3 mixtures for each state. 
