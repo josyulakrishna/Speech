@@ -21,7 +21,9 @@ cov_type = 'full'; %the covariance type that is chosen as ҦullҠfor gaussians.
 prior0 = normalise(rand(Q,1));
 transmat0 = mk_stochastic(rand(Q,Q));
 %size(MFCC)
-%mfccs = cell2mat(mfcc); 
+mfccs = cell2mat(mfcc); 
+display('size of mfccs');
+%size(mfccs)
 [mu0, Sigma0] = mixgauss_init(Q*mix, cell2mat(mfcc), cov_type);
 
 mu0 = reshape(mu0, [O Q mix]);
