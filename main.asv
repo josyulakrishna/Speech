@@ -1,0 +1,66 @@
+warning('off', 'all');
+
+addpath('HMM'); 
+addpath('Phase I');
+addpath('Phase II');
+addpath('Phase III');
+addpath('Testing'); 
+
+%Change the number of States of the HMM here and the Mixture Components. 
+%Possible errors: Number of Centers exceed the data dimension, in which
+%case try decreasing the mixture components, if that still doesn't work 
+%check the dimesions of your data. 
+
+numOfStates = 3; 
+numOfMixtures = 2;
+
+%Path to the MFCCS file should be given here. Extract MFCCS using the
+%extractMfccs Function and save the result in a mat file. 
+
+%pathToMfccsMatFile = 'femaleMfcc.mat'; 
+pathToMfccsMatFile = 'temp.mat'; 
+%This Function constructs the HMM Models with 13 Mfcc Coefficients with
+%that are obtained from the extractMfccs.
+load(pathToMfccsMatFile, 'mfccs');
+
+models = constructModels(mfccs);
+
+save(strcat('models.mat', date), 'models');
+
+%construct confusion matrix for the given data
+[actualLabels, predictedLabels] = confusionMatrix(models, mfccs);
+C = confusionmat(actualLabels, predictedLabels); 
+cS = confusionmatStats(C'); 
+cS.precision
+
+%choose models you want to test on 15 is better. 
+%numberofmodels = 5;
+
+%[values, index] = sort(cS.precision, 'descend'); 
+
+%modelTop = models(index(1:numberofmodels)); 
+
+modellogliks =  extractModelsLikelihoods(models, mfccs);
+
+modellogliks
+
+%models with only top 5 samples
+revisedModels = constructModels2( mfccs, modellogliks); 
+[actualLabels, predictedLabels] = confusionMatrix(revisedModels, mfccs);
+C = confusionmat(actualLabels, predictedLabels); 
+cS = confusionmatStats(C'); 
+cS.precision
+
+%extracting the new features
+modellogliks2 = extractModelsLikelihoods3( revisedModels, modellogliks, mfccs);
+
+modellogliks2
+
+%training the HMM with new features
+modelsWithNewFeatures = makeLLVModels( modellogliks2 );
+
+%testing the models
+[actual, predicted] = confusionMatrixLLV(modelsWithNewFeatures); 
+C = confusionmat(actual, predicted); 
+cS = confusionmatStats(C'); 
+cS.precision

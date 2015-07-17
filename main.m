@@ -17,38 +17,50 @@ numOfMixtures = 2;
 %Path to the MFCCS file should be given here. Extract MFCCS using the
 %extractMfccs Function and save the result in a mat file. 
 
-pathToMfccsMatFile = 'femaleMfcc.mat'; 
-
+%pathToMfccsMatFile = 'femaleMfcc.mat'; 
+pathToMfccsMatFile = 'temp.mat'; 
 %This Function constructs the HMM Models with 13 Mfcc Coefficients with
 %that are obtained from the extractMfccs.
-load('femaleMfcc.mat', 'mfccs');
+load(pathToMfccsMatFile, 'mfccs');
 
 models = constructModels(mfccs);
 
-save(str('models.mat', date), 'models');
+save(strcat('models.mat', date), 'models');
 
 %construct confusion matrix for the given data
-[actualLabels, predictedLabels] = confusionMatrix(models, mfccs, mode1);
+[actualLabels, predictedLabels] = confusionMatrix(models, mfccs);
 C = confusionmat(actualLabels, predictedLabels); 
 cS = confusionmatStats(C'); 
+cS.precision
 
 %choose models you want to test on 15 is better. 
-numberofmodels = 5;
+%numberofmodels = 5;
+%[values, index] = sort(cS.precision, 'descend'); 
+%models = models(index(1:numberofmodels)); 
 
-[values, index] = sort(cS.precision, 'descend'); 
+modellogliks =  extractModelsLikelihoods(models, mfccs);
 
-modelTop = models(index(1:numberofmodels)); 
-
-modellogliks =  extractModelsLikelihoods(modelTop, mfccs);
+modellogliks
 
 %models with only top 5 samples
 revisedModels = constructModels2( mfccs, modellogliks); 
+[actualLabels, predictedLabels] = confusionMatrix(revisedModels, mfccs);
+C = confusionmat(actualLabels, predictedLabels); 
+cS = confusionmatStats(C'); 
+cS.precision
 
 %extracting the new features
 modellogliks2 = extractModelsLikelihoods3( revisedModels, modellogliks, mfccs);
 
+modellogliks2
+
 %training the HMM with new features
 modelsWithNewFeatures = makeLLVModels( modellogliks2 );
 
+save(strcat('newmodels.mat', date), 'modelsWithNewFeatures', 'modellogliks2');
+
 %testing the models
-[actual, predicted] = confusionMatrixLLV(mfccs, modelsWithNewFeatures); 
+[actual, predicted] = confusionMatrixLLV(modelsWithNewFeatures, modellogliks2); 
+C = confusionmat(actual, predicted); 
+cS = confusionmatStats(C'); 
+cS.precision

@@ -1,4 +1,4 @@
-function [LL, prior2, transmat2, mu2, Sigma2, mixmat2] = trainHMM(mfcc,mode1)
+function [LL, prior2, transmat2, mu2, Sigma2, mixmat2] = trainHMM(mfcc,mode1,numberOfModelsLLV)
 %constructModels/makeLLVModels -> buildHMM -> trainHMM
 addpath(genpath('HMMall'));
 if nargin < 2 
@@ -23,7 +23,7 @@ end
 
 if strcmp(mode1, 'llv')
     Q = 1;             % Number of states (left to right)
-    O = 15;             %output symbols
+    O = numberOfModelsLLV;             %output symbols
     mix = 2;
     cov_type = 'full'; %the covariance type that is chosen as ?ull?for gaussians.
     prior0 = [1];

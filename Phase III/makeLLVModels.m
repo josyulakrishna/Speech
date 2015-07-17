@@ -1,4 +1,4 @@
-function llvModels = makeLLVllvModels(logliks),
+function llvModels = makeLLVModels(logliks),
 %takes log
 %makeLLVModels -> buildHMM -> trainHMM
 addpath('HMMBuilder'); 
@@ -10,7 +10,7 @@ for i = 1:length(labels),
             %size(logliks.(labels{i}).llvs(1:end-20,:))
             temp = logliks.(labels{i}).llvs;
             n = floor(length(temp)*0.8); 
-            model = buildHMM( temp(1:n,:), 'llv');
+            model = buildHMM( temp(1:n,:), 'llv', length(fields(logliks)));
             llvModels(i).LL = model.LL;
             llvModels(i).prior = model.prior;
             llvModels(i).transmat = model.transmat; 

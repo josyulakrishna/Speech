@@ -1,10 +1,15 @@
-function model = buildHMM(mfccsOfSyllable, mode1),
+function model = buildHMM(mfccsOfSyllable, mode1, numberOfModelsLLV),
 %Input from constructModels takes MFCCS of syllable trains a model in
 %constructHmm.
     if nargin<2, 
         mode1 = 'hmm';
     end
-    [LL, prior1, transmat1, mu1, Sigma1, mixmat1] = trainHMM(mfccsOfSyllable, mode1);
+    
+    if strcmp(mode1, 'llv')
+    [LL, prior1, transmat1, mu1, Sigma1, mixmat1] = trainHMM(mfccsOfSyllable, mode1,numberOfModelsLLV);
+    else 
+        [LL, prior1, transmat1, mu1, Sigma1, mixmat1] = trainHMM(mfccsOfSyllable, mode1);
+    end
     model = struct; 
     model.LL = LL;
     model.prior = prior1;
